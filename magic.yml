@@ -1,19 +1,31 @@
 ---
 - hosts: webservers
+  sudo: yes
+
   vars:
-    app_name: PleaseDeployMe 
+    app_name: PleaseDeployMe
     repo_url: https://github.com/deniseirvin/ansibleTestRun.git
     repo_remote: origin
     repo_version: master
     webapps_dir: /deployed  #Is this what I want?
-    virtualenv_root: /deployed/mac
+    virtualenv_root: /deployed/PleaseDeployMe/mac
   tasks:
+    - name: delete old PleaseDeployMe files
+      shell: rm -r /deployed/PleaseDeployM*
     - name: git pull project
       git: repo={{repo_url}} dest={{webapps_dir}}/{{app_name}} version=master
       notify:
         - restart app
-    - pip: requirements={{webapps_dir}}/{{app_name}}/requirements.txt virtualenv=latest_v3 executable={{virtualenv_root}}/bin/pip3
-    - shell: "{{virtualenv_root}}/bin/python3 manage.py deploy"
+    - name: install things
+      pip: name=virtualenv
+    - name: create virtualenv
+      shell: virtualenv /deployed/PleaseDeployMe/venv
+
+    - name: activate virtualenv
+      shell: /bin/bash /deployed/PleaseDeployMe/venv/bin/activate
+
+    - pip: requirements=/deployed/{{app_name}}/requirements.txt virtualenv=/deployed/{{app_name}}/mac
+    - shell: "{{virtualenv_root}}/bin/python important.py &"
       args:
         chdir: "{{webapps_dir}}/{{app_name}}"
   handlers:
