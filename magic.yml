@@ -24,7 +24,7 @@
     - name: activate virtualenv
       shell: /bin/bash /deployed/PleaseDeployMe/venv/bin/activate
 
-    #- pip: requirements=/deployed/{{app_name}}/requirements.txt virtualenv=/deployed/{{app_name}}/mac
+    - pip: requirements=/deployed/{{app_name}}/requirements.txt virtualenv=/deployed/{{app_name}}/mac
     #- shell: "{{virtualenv_root}}/bin/python important.py &"
       #args:
         #chdir: "{{webapps_dir}}/{{app_name}}"
