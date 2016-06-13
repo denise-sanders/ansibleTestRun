@@ -10,8 +10,6 @@
     webapps_dir: /deployed  #Is this what I want?
     virtualenv_root: /deployed/PleaseDeployMe/mac
   tasks:
-    - name: delete old PleaseDeployMe files
-      shell: rm -r /deployed/PleaseDeployM*
     - name: git pull project
       git: repo={{repo_url}} dest={{webapps_dir}}/{{app_name}} version=master
       notify:
@@ -25,14 +23,13 @@
       shell: /bin/bash /deployed/PleaseDeployMe/venv/bin/activate
 
     - pip: requirements=/deployed/{{app_name}}/requirements.txt virtualenv=/deployed/{{app_name}}/mac
-    #- shell: "{{virtualenv_root}}/bin/python important.py &"
-      #args:
-        #chdir: "{{webapps_dir}}/{{app_name}}"
+
     - name: run supervisord
-      command: "supervisord -c /deployed/PleaseDeployMe/supervisord.conf"    
+      command: "supervisord -c /deployed/PleaseDeployMe/supervisord.conf"
     - name: begin flask app
-      notify: restart app
-        
+      supervisorctl: name=flask_app state=started
+
+
   handlers:
     - name: restart app
       supervisorctl: name={{app_name}} state=restarted
